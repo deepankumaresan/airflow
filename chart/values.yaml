@@ -1679,10 +1679,13 @@ config:
     executor: '{{ .Values.executor }}'
     # For Airflow 1.10, backward compatibility; moved to [logging] in 2.0
     colored_console_log: 'False'
-    remote_logging: '{{- ternary "True" "False" .Values.elasticsearch.enabled }}'
+    remote_logging: '{{- ternary "True" "False" (.Values.elasticsearch.enabled | default .Values.logging.remote_logging.enabled) }}'
   logging:
-    remote_logging: '{{- ternary "True" "False" .Values.elasticsearch.enabled }}'
+    remote_logging: '{{- ternary "True" "False" (.Values.elasticsearch.enabled | .Values.logging.remote_logging.enabled) }}'
     colored_console_log: 'False'
+    remote_log_conn_id: '{{ .Values.logging.remote_log_conn_id | default quote }}'
+    remote_base_log_folder: '{{ .Values.logging.remote_base_log_folder | default quote }}'
+    logging_config_class: '{{ .Values.logging.log_config | default quote }}'
   metrics:
     statsd_on: '{{ ternary "True" "False" .Values.statsd.enabled }}'
     statsd_port: 9125
